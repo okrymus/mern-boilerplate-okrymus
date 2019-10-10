@@ -1,0 +1,22 @@
+version: '3.7'
+services:
+  app:
+    container_name: app
+    build:
+      context: ./
+    restart: always
+    ports:
+      - "8080:8080"
+    links:
+      - redis
+    environment:
+      NODE_ENV: production
+    volumes:
+      - ../nginxServer/data/certbot/conf:/etc/letsencrypt
+      # - ./build:/app
+  redis:
+    image: redis
+networks:
+  default:
+    external:
+      name: app-network

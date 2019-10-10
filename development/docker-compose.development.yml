@@ -1,0 +1,29 @@
+version: '3.7'
+services:
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+    hostname: redis
+  server:
+    container_name: server
+    build:
+      context: ../okrymus-boilerplate/server
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: development
+    volumes:
+      - ../okrymus-boilerplate/server:/server
+      - ../nginxServer/data/certbot/conf:/etc/letsencrypt
+    depends_on:
+      - redis
+  client:
+    container_name: client
+    build:
+      context: ../okrymus-boilerplate/client
+    ports:
+      - "3002:3002"
+    volumes:
+      - ../okrymus-boilerplate/client:/client
+      - ../nginxServer/data/certbot/conf:/etc/letsencrypt
