@@ -6,6 +6,8 @@ Boilerplate for MERN stack development, ready for production.
 
 **Highlights**
 
++ [Nginx](https://www.nginx.com) server 
++ [Certbot](https://certbot.eff.org) open source software tool for automatically using Let’s Encrypt certificates
 + [Docker](https://www.docker.com/) containers
 + Using [HTTP/2](https://http2.github.io/)
 + [Redis](https://www.npmjs.com/package/connect-redis) for sessions
@@ -23,182 +25,119 @@ Boilerplate for MERN stack development, ready for production.
 + [Webpack](https://webpack.js.org/) built production server
 + Using [PM2](http://pm2.keymetrics.io/) (cluster mode) for production
 
-## Roadmap
-
-These are the planned updates of the project.
-
-- Nginx server
-- PayPal API
-- Google logn
-
 ## Support
 
-If you like this project, please consider supporting the development.
-
-[![ko-fi](https://i.ibb.co/pvbX9W7/kofi21.png)](https://ko-fi.com/Z8Z7XSML)
-
-Thank you!
+[MEAN-boilerplate](https://github.com/tamasszoke/mern-boilerplate) from Tamas Szoke. You can support him at the [link](https://github.com/tamasszoke/mern-boilerplate)
 
 ## Installation
 
-1. Install dependencies
-2. Set env variables
-3. Add SSL files
+1. Create database
+2. Register Domain(optional)
+1. Set env variables
+2. Install dependencies and 
+3. Add dummy SSL certificate
 4. Create database
-
-**Install dependencies**
-
-Run <code>npm install</code> at server folder
-
-Run <code>npm install</code> at client folder
-
-**Set env variables - Client**
-
-Create <code>.env.development</code> and <code>.env.production</code> files inside <code>client/</code> folder.
-
-Use port `3002` for development and port `80` for production.
-
-Example (include all of these):
-
-    HOST=0.0.0.0
-    PORT=3002
-    REACT_APP_HOST=localhost
-    REACT_APP_PORT=3001
-    SKIP_PREFLIGHT_CHECK=true
-    CHOKIDAR_USEPOLLING=true
-
-Located at `client/.env.development`.
-
-Note: if you change the ports change them in the dockerfiles too (root, server).
-
-**Set env variables - Server**
-
-Create <code>test.config.env</code>, <code>development.config.env</code> and <code>production.config.env</code> files inside <code>server/.env/</code> folder.
-
-Use port `3001` for test, development and port `80` for production.
-
-Example (include all of these):
-
-    IP=0.0.0.0
-    HOST=localhost
-    PORT=3001
-    CLIENT_HOST=localhost
-    CLIENT_PORT=3002
-    REDIS_URL=redis://redis:6379
-    SSL_KEY=[SSL_KEY_FILE_NAME]
-    SSL_CRT=[SSL_CRT_FILE_NAME]
-    DB_HOST=[MONGOLAB_DB_URL]
-    DB_USER=[MONGOLAB_DB_USERNAME]
-    DB_PASS=[MONGOLAB_DB_PASSWORD]
-    EMAIL_ADDRESS=[GMAIL_ADDRESS]
-    EMAIL_PASS=[GMAIL_PASSWORD]
-
-Located at `server/.env/development.config.env`.
-
-Note: if you change the ports change them in the dockerfiles too (root, server).
-
-**Add SSL files**
-
-Put your (for example) <code>crt.txt</code> and <code>key.txt</code> files inside <code>server/ssl/</code> folder.
-
-Tip: create them online for free at [ZeroSSL](https://zerossl.com/)
 
 **Create database**
 
 Create MongoDB with a collection called `users`.
+You can create account and use cloud database from [mongoDB](https://www.mongodb.com/).
 
-I've used the free service provided by [mLab](https://mlab.com/).
+**MERN Stack on AWS EC2 (optional)**
+
+1. Create a new instance of an AWS EC2 Ubuntu server
+***Make sure you do these steps of launching an instance***
+- Select type of server with the latest Ubuntu version
+- Add a security group for http and https
+- Create and download a new key pair (you  will need the key to access the server)  and place it inside <code>./setup/SSH/</code> folder
+- Launch the instance
+
+2. Open your terminal, navigate to your key pair file location  <code>chmod 400 ./YOUR_KEY_PAIR_NAME.pem </code>
+
+3. Copy your instance's IPv4 Public IP, it should be under your instance description. You’ll need it for domain DNS setup.
+
+**Register Domain(optional)**
+
+I've used [goDaddy](https://www.godaddy.com) to have my own domain.
+- You’ll have to point the DNS to your EC2 public IP.
+- Paste your EC2 public IP in your domain's DNS Management
+
+**Setup env variables**
+
+Edit setup.config file inside <code>setup/</code>  folder
+
+Example
+    domains=(example.org www.example.org)
+    MONGOLAB_DB_URL="example-cx1pi.mongodb.net/exampleDB?retryWrites=true\&w=majority"
+    MONGOLAB_DB_USERNAME=databaseUser
+    MONGOLAB_DB_PASSWORD=databaseUserPWD
+    GMAIL_ADDRESS=youremail@gmail.com
+    GMAIL_PASSWORD=emailpassword
+    AMAZON_PUBLIC_DNS=ec2-00-000-000-000.compute-1.amazonaws.com
+    AMAZON_USER=ubuntu
+    SSH_FILENAME=YOUR_KEY_PAIR_NAME.pem
+
+Save file and then Open terminal Enter <code>./setup.sh</code>
+
+**Install dependencies and Create production**
+
+Run command <code>./createProduction.sh</code> at the project's root folder. It will automatically install dependencies and create production. Your production folder is located at <code>production/build</code>
+
+Note: every time you need to create production, you will need to run the command.
+
+**Add SSL Dummy**
+
+Run command <code>./dummy-init.sh</code> inside <code>/nginxServer</code> folder
 
 ## Usage
 
-Note: use the following commands at the root folder.
+### Development
+Note: use the following commands at the development folder.
 
-Development
-
-1. Start <code>docker-compose -f docker-compose.development.yml up</code>
+1. Start: <code>./init.sh</code>
 2. Go to <code>https://localhost:3001</code> in browser for server
 3. Go to <code>http://localhost:3002</code> in browser for client
 
-Production
+### Production
+** Testing on localhost
+Firstly, Map localhost to your domain name
+1. On the terminal, open your local machine’s hosts config file:
+nano <code> /etc/hosts</code>
+Simply add a new line <code>127.0.0.1  yourdomainname.com</code>
 
-1. Run <code>npm run build</code>
-1. Start <code>docker-compose -f docker-compose.production.yml up -d</code>
-2. Go to <code>https://localhost:80</code> in browser
+Note: use the following commands at the production folder.
+2. Start: <code>./init.sh</code>
 
-Note: run `npm rebuild node-sass` inside the client container if asked.
+Note: use the following commands at the nginxServer folder.
+3. Start: <code>docker-compose up</code>
 
+4. Go to <code>https://yourdomainname.com</code>
+
+###  Deployment
+1. Add your email address in init.sh file located inside nginxServer folder
+Note: Set staging to 1 if you're testing your setup to avoid hitting request limits
+2. Copy and upload nginxServer and productive to your server EC2
+Example
+    <code>scp -i path_to_SSH_file -r production $AMAZON_USER@$AMAZON_PUBLIC_DNS:/home/ubuntu/
+    </code>
+    <code>scp -i path_to_SSH_file -r nginxServer $AMAZON_USER@$AMAZON_PUBLIC_DNS:/home/ubuntu/
+    </code>
+
+3. Connect to your server
+Example
+    <code>ssh -i path_to_SSH_file $AMAZON_USER@$AMAZON_PUBLIC_DNS
+</code>
+
+4. On the server terminal,
+    - Run command <code>./init.sh</code> inside the <code>production/</code> folder
+    - Run command <code>./init.sh</code> inside the <code>nginxServer/</code> folder
+    - Run command <code>docker-compose up</code> inside the <code>nginxServer/</code> folder
+    - Go to <code>https://yourdomainname.com</code>
+Note: you will need multiple terminal windows to run these commands
 ## Docker commands
 
-Using separated docker-compose files for development and production.
-
-**Development**
-
-Start: `docker-compose -f docker-compose.development.yml up`<br>
-Stop: `docker-compose -f docker-compose.development.yml down`
-
-**Production**
-
-Start: `docker-compose -f docker-compose.production.yml up`<br>
-Stop: `docker-compose -f docker-compose.production.yml down`
-
-## Without docker
-
-You have to set the environment you use in your scripts at `server/package.json`:
-
-    "test": "set NODE_ENV=test&& mocha --exit --reporter spec \"src/*/*.test.js\"",
-    "dev": "set NODE_ENV=development&& nodemon app.js -L --exec \"npm run test && npm run lint && node\"",
-    "build": "set NODE_ENV=production&& webpack --config webpack.config.js",
-
-Just overwrite the test, dev, build lines with the above.
-
-Development
-
-1. Start <code>npm run dev</code> (or `dev:client` and `dev:server`)
-2. Go to <code>https://localhost:3001</code> (server)
-3. Go to <code>http://localhost:3002</code> (client)
-
-Production
-
-1. Run <code>npm run build</code>
-1. Start <code>npm start</code>
-2. Go to <code>https://localhost:80</code>
-
-Note: you may need to install nodemon: <code>npm install nodemon -g</code>
-
-## NPM Scripts
-
-If you prefer not to use docker, you can use the following scripts from the root folder:
-
-**npm run dev**
-
-To use this command, you should install concurrently.<br>
-It's prepared, just run `npm install` under the root folder.
-
-**npm run dev:client**
-
-Runs the react client in development mode.<br>
-The browser will lint, reload if you make edits.
-
-**npm run dev:server**
-
-Runs the node server in development mode.<br>
-The server will test, lint and reload if you make edits.
-
-**npm run build**
-
-Builds the complete application for production to the `build` folder.<br>
-
-**npm start**
-
-Runs the app in production mode with PM2 (cluster mode).
-
-**npm stop**
-
-Stops the application instances in PM2.
-
-**npm run delete**
-
-Removes the application instances from PM2.
+Stop all containers: docker stop $(docker ps -a -q)
+Remove all containers: echo y  | docker system prune -a
 
 ## License
 
