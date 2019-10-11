@@ -66,7 +66,8 @@ I've used [goDaddy](https://www.godaddy.com) to have my own domain.
 
 Edit setup.config file inside <code>setup/</code>  folder
 
-Example
+Example:
+
     domains=(example.org www.example.org)
     MONGOLAB_DB_URL="example-cx1pi.mongodb.net/exampleDB?retryWrites=true\&w=majority"
     MONGOLAB_DB_USERNAME=databaseUser
